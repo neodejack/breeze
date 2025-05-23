@@ -5,7 +5,7 @@ defmodule Demo do
 
   def render(assigns) do
     ~H"""
-      <box style="text-5 bold">Counter: <%= @counter %></box>
+      <box style="text-5 bold">Counter: {@counter}</box>
     """
   end
 

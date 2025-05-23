@@ -18,11 +18,11 @@ defmodule Snake do
     ~H"""
     <.panel width={@size.width * 2} height={@size.height + 1}>
       <:title>
-        <box style="text-3">Score: <%= length(@path) - 4 %></box>
+        <box style="text-3">Score: {length(@path) - 4}</box>
       </:title>
       <box :for={{x, y} <- @path} style={"bg-7 absolute left-#{x * 2 - 1} top-#{y + 1}"}>##</box>
       <box style={"text-2 absolute text-#{@food.color} left-#{@food.x * 2 - 1} top-#{@food.y + 1}"}>
-        <%= @food.glyph %>
+        {@food.glyph}
       </box>
     </.panel>
     """
@@ -38,9 +38,9 @@ defmodule Snake do
     ~H"""
     <box style={"border width-#{@width} height-#{@height}"}>
       <box :if={assigns[:title]} style="absolute left-1 top-0">
-        <%= render_slot(@title) %>
+        {render_slot(@title)}
       </box>
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </box>
     """
   end

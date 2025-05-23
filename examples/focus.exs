@@ -63,7 +63,7 @@ defmodule Focus do
           <:item value="foo">Foo</:item>
         </.list>
       </box>
-      <box><%= @last_value %></box>
+      <box>{@last_value}</box>
     </box>
     """
   end
@@ -82,7 +82,7 @@ defmodule Focus do
           :for={item <- @item}
           value={item.value}
           style="selected:bg-24 selected:text-0 focus:selected:text-7 focus:selected:bg-4"
-        ><%= render_slot(item, %{}) %></box>
+        >{render_slot(item, %{})}</box>
     </box>
     """
   end

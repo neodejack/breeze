@@ -90,7 +90,7 @@ defmodule Breeze.Server do
 
     terminal =
       if Keyword.get(opts, :hide_cursor) do
-        Termite.Screen.run_escape_sequence(terminal, :cursor_hide)
+        Termite.Screen.hide_cursor(terminal)
       else
         terminal
       end
@@ -188,27 +188,26 @@ defmodule Breeze.Server do
   end
 
   defp stop(state) do
-    output =
-      Termite.Screen.escape_sequence(:reset) <>
-        Termite.Screen.escape_sequence(:screen_clear) <>
-        Termite.Screen.escape_sequence(:cursor_show) <>
-        Termite.Screen.escape_sequence(:screen_alt_exit)
+    state.terminal
+    |> Termite.Screen.clear_screen()
+    |> Termite.Screen.show_cursor()
+    |> Termite.Screen.exit_alt_screen()
 
-    Termite.Terminal.write(state.terminal, output)
     System.halt()
   end
 
   defp render(state) do
-    output =
-      Termite.Screen.escape_sequence(:reset) <> Termite.Screen.escape_sequence(:screen_clear)
-
-    {acc, %{content: view_output}} =
+    {acc, %{content: output}} =
       Breeze.Renderer.render(state.view, state.assigns,
         focused: state.focused,
         implicit_state: state.implicit_state
       )
 
-    Termite.Terminal.write(state.terminal, output <> view_output)
+    terminal =
+      state.terminal
+      |> Termite.Screen.clear_screen()
+      |> Termite.Screen.cursor_position(0, 0)
+      |> Termite.Terminal.write(output)
 
     last = map_size(acc.elements)
 
@@ -261,7 +260,13 @@ defmodule Breeze.Server do
         end
       end)
 
-    %{state | focusables: acc.focusables, implicit_state: implicits, events: events}
+    %{
+      state
+      | terminal: terminal,
+        focusables: acc.focusables,
+        implicit_state: implicits,
+        events: events
+    }
   end
 
   defp convert_key("A"), do: "ArrowUp"

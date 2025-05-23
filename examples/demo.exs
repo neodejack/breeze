@@ -19,7 +19,7 @@ defmodule Demo do
   def announce(assigns) do
     ~H"""
     <box style={"bg-#{:rand.uniform(8)} absolute left-0 top-#{@index}"}>
-      hello <%= @name %> <%= @index %>
+      hello {@name} {@index}
     </box>
     """
   end
