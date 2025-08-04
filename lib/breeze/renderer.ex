@@ -254,7 +254,13 @@ defmodule Breeze.Renderer do
   defp apply_style("absolute", acc), do: Map.put(acc, :position, :absolute)
   defp apply_style("left-" <> num, acc), do: Map.put(acc, :left, String.to_integer(num))
   defp apply_style("top-" <> num, acc), do: Map.put(acc, :top, String.to_integer(num))
+
+  defp apply_style("width-auto", acc), do: Map.put(acc, :width, :auto)
+  defp apply_style("width-screen", acc), do: Map.put(acc, :width, :screen)
   defp apply_style("width-" <> num, acc), do: Map.put(acc, :width, String.to_integer(num))
+
+  defp apply_style("height-auto", acc), do: Map.put(acc, :height, :auto)
+  defp apply_style("height-screen", acc), do: Map.put(acc, :height, :screen)
   defp apply_style("height-" <> num, acc), do: Map.put(acc, :height, String.to_integer(num))
 
   defp apply_style("text-" <> num, acc),
