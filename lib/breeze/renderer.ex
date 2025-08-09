@@ -29,10 +29,10 @@ defmodule Breeze.Renderer do
     |> repeat(
       choice([
         attribute,
-        boolean_attribute,
-        ignore(string(">"))
+        boolean_attribute
       ])
     )
+    |> ignore(string(">"))
 
   closing_tag = ignore(string("</")) |> concat(tag) |> ignore(string(">"))
 
