@@ -42,6 +42,8 @@ defmodule Focus do
   use Breeze.View
 
   def mount(_opts, term) do
+    # set the default focus to element attribute id="l1"
+    term = %{term | focused: "l1"}
     {:ok, assign(term, last_value: "none")}
   end
 
@@ -63,7 +65,8 @@ defmodule Focus do
           <:item value="foo">Foo</:item>
         </.list>
       </box>
-      <box>{@last_value}</box>
+      <box>Press tab/shift-tab to change focus</box>
+      <box>last_value: {@last_value}</box>
     </box>
     """
   end
