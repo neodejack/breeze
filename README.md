@@ -54,7 +54,7 @@ end
 ## Examples
 
 ```elixir
-Mix.install([{:breeze, "~> 0.2.0"}]
+Mix.install([{:breeze, "~> 0.2.0"}])
 
 defmodule Demo do
   use Breeze.View
