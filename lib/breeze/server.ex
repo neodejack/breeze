@@ -189,6 +189,13 @@ defmodule Breeze.Server do
     end
   end
 
+  def terminate(:normal, state) do
+    state.terminal
+    |> Termite.Screen.clear_screen()
+    |> Termite.Screen.show_cursor()
+    |> Termite.Screen.exit_alt_screen()
+  end
+
   defp stop(state) do
     state.terminal
     |> Termite.Screen.clear_screen()

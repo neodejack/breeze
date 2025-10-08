@@ -17,14 +17,18 @@ defmodule Breeze.List do
   def handle_event(_, %{"key" => "ArrowDown"}, %{values: values} = state) do
     index = Enum.find_index(values, &(&1 == state.selected))
     value = if index, do: Enum.at(values, index + 1) || hd(values), else: hd(values)
-    {{:change, %{value: value}}, %{state | selected: value}}
+    {:noreply, %{state | selected: value}}
   end
 
   def handle_event(_, %{"key" => "ArrowUp"}, %{values: values} = state) do
     index = Enum.find_index(values, &(&1 == state.selected))
     first = hd(Enum.reverse(values))
     value = if index, do: Enum.at(values, index - 1) || first, else: first
-    {{:change, %{value: value}}, %{state | selected: value}}
+    {:noreply, %{state | selected: value}}
+  end
+
+  def handle_event(_, %{"key" => "q"}, state) do
+    {{:change, %{value: state.selected}}, state}
   end
 
   def handle_event(_, _, state), do: {:noreply, state}
@@ -41,17 +45,18 @@ end
 defmodule Focus do
   use Breeze.View
 
-  def mount(_opts, term) do
-    # set the default focus to element attribute id="l1"
+  def mount(opts, term) do
+    term = Map.put_new(term, :receiver, Keyword.fetch!(opts, :receiver))
+
     term = %{term | focused: "l1"}
-    {:ok, assign(term, last_value: "none")}
+    {:ok, term}
   end
 
   def render(assigns) do
     ~H"""
     <box id="lol">
       <box style="inline border focus:border-3" focusable id="base">
-        <.list :for={id <- ["l1", "l2", "l3", "l4", "l5"]} br-change="change" id={id}>
+        <.list :for={id <- ["l1", "l2", "l3", "l4", "l5"]} br-change="selected-event" id={id}>
           <:item value="hello">Hello</:item>
           <:item value="world">World</:item>
           <:item value="foo">Foo</:item>
@@ -66,7 +71,6 @@ defmodule Focus do
         </.list>
       </box>
       <box>Press tab/shift-tab to change focus</box>
-      <box>last_value: {@last_value}</box>
     </box>
     """
   end
@@ -88,21 +92,32 @@ defmodule Focus do
         >{render_slot(item, %{})}</box>
     </box>
     """
+
   end
 
   def handle_info(_, term) do
     {:noreply, term}
   end
 
-  def handle_event("change", %{value: value}, term) do
-    {:noreply, assign(term, last_value: value)}
+  def handle_event("selected-event", %{value: value}, term) do
+    send(term.receiver, {:selected, value})
+    {:noreply, term}
   end
 
   def handle_event(_, _, term) do
     {:noreply, term}
   end
+
 end
 
 
-Breeze.Server.start_link(view: Focus, hide_cursor: false)
-:timer.sleep(100_000)
+{:ok, ui} = Breeze.Server.start_link(view: Focus, hide_cursor: false, start_opts: [receiver: self()])
+
+
+receive do
+  {:selected, value} ->
+    GenServer.stop(ui)
+    File.write("receive_file", "receievd from freeze: #{value}\n", [:append])
+    IO.puts("receievd from freeze: #{value}")
+end
+
