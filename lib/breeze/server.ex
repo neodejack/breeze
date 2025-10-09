@@ -194,6 +194,12 @@ defmodule Breeze.Server do
     |> Termite.Screen.clear_screen()
     |> Termite.Screen.show_cursor()
     |> Termite.Screen.exit_alt_screen()
+
+    :ok
+  end
+
+  def terminate(_reason, _state) do
+    :ok
   end
 
   defp stop(state) do
