@@ -42,15 +42,13 @@ defmodule Focus do
   use Breeze.View
 
   def mount(_opts, term) do
-    # set the default focus to element attribute id="l1"
-    term = %{term | focused: "l1"}
     {:ok, assign(term, last_value: "none")}
   end
 
   def render(assigns) do
     ~H"""
     <box id="lol">
-      <box style="inline border focus:border-3" focusable id="base">
+      <box style="inline border focus:border-3" id="base">
         <.list :for={id <- ["l1", "l2", "l3", "l4", "l5"]} br-change="change" id={id}>
           <:item value="hello">Hello</:item>
           <:item value="world">World</:item>

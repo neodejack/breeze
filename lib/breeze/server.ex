@@ -98,7 +98,8 @@ defmodule Breeze.Server do
     reader = terminal.reader
     state = %{state | terminal: terminal, reader: reader}
     {:ok, state} = state.view.mount(start_opts, state)
-    state = render(state)
+
+    state = state |> set_default_focus() |> render()
     {:noreply, state}
   end
 
@@ -263,10 +264,32 @@ defmodule Breeze.Server do
     %{
       state
       | terminal: terminal,
-        focusables: acc.focusables,
         implicit_state: implicits,
         events: events
     }
+  end
+
+  defp set_default_focus(state) do
+    {%{focusables: focusables}, _} =
+      Phoenix.HTML.Safe.to_iodata(state.view.render(state.assigns))
+      |> IO.iodata_to_binary()
+      |> Breeze.Renderer.parse()
+
+    state = %{
+      state
+      | focusables: focusables
+    }
+
+    case state.focused in state.focusables do
+      true ->
+        state
+
+      false ->
+        %{
+          state
+          | focused: hd(focusables)
+        }
+    end
   end
 
   defp convert_key("A"), do: "ArrowUp"
